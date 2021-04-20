@@ -46,7 +46,15 @@ SET(librepo_HEADERS
     downloadtarget.h)
 
 ADD_LIBRARY(librepo SHARED ${librepo_SRCS})
+ADD_LIBRARY(librepo_static STATIC ${librepo_SRCS})
 TARGET_LINK_LIBRARIES(librepo
+                        ${LIBXML2_LIBRARIES}
+                        ${CURL_LIBRARY}
+                        ${LIBCRYPTO_LIBRARIES}
+                        ${GPGME_VANILLA_LIBRARIES}
+                        ${GLIB2_LIBRARIES}
+                     )
+TARGET_LINK_LIBRARIES(librepo_static
                         ${LIBXML2_LIBRARIES}
                         ${CURL_LIBRARY}
                         ${LIBCRYPTO_LIBRARIES}
@@ -55,10 +63,13 @@ TARGET_LINK_LIBRARIES(librepo
                      )
 IF (WITH_ZCHUNK)
     TARGET_LINK_LIBRARIES(librepo ${ZCHUNKLIB_LIBRARIES})
+    TARGET_LINK_LIBRARIES(librepo_static ${ZCHUNKLIB_LIBRARIES})
 ENDIF (WITH_ZCHUNK)
 
 SET_TARGET_PROPERTIES(librepo PROPERTIES OUTPUT_NAME "repo")
 SET_TARGET_PROPERTIES(librepo PROPERTIES SOVERSION 0)
+SET_TARGET_PROPERTIES(librepo_static PROPERTIES OUTPUT_NAME "repo")
+SET_TARGET_PROPERTIES(librepo_static PROPERTIES SOVERSION 0)
 #SET_TARGET_PROPERTIES(librepo PROPERTIES VERSION "0")
 
 CONFIGURE_FILE("librepo.pc.cmake" "${CMAKE_BINARY_DIR}/librepo.pc" @ONLY)
@@ -70,6 +81,7 @@ ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
 
 INSTALL(FILES ${librepo_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/librepo)
 INSTALL(TARGETS librepo LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+INSTALL(TARGETS librepo_static LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 INSTALL(FILES "${CMAKE_BINARY_DIR}/librepo.pc"
 	DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
